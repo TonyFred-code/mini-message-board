@@ -19,7 +19,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "server": "node --watch index.js"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
