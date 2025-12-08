@@ -37,6 +37,20 @@ indexRouter.get("/message/:messageId", (req, res) => {
 
 indexRouter.post("/new", (req, res) => {
   const { text, user } = req.body;
+  if (
+    typeof text !== "string" ||
+    text.trim() === "" ||
+    typeof user !== "string" ||
+    user.trim() === ""
+  ) {
+    res
+      .status(400)
+      .send(
+        "Both 'text' and 'user' fields are required and must be non-empty."
+      );
+    return;
+  }
+
   messages.push({
     text: text,
     user: user,
