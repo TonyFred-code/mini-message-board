@@ -14,6 +14,15 @@ async function insertMessage(userName, text) {
   ]);
 }
 
+async function getMessageById(id) {
+  const { rows } = await pool.query(
+    "SELECT * FROM messages WHERE (id) = ($1)",
+    [id]
+  );
+
+  return rows[0];
+}
+
 // async function searchMessages(matcher) {
 //   const { rows } = await pool.query(
 //     "SELECT * FROM messages WHERE text ILIKE $1",
@@ -26,4 +35,4 @@ async function insertMessage(userName, text) {
 //   await pool.query("DELETE FROM messages");
 // }
 
-export { getAllMessages, insertMessage };
+export { getAllMessages, insertMessage, getMessageById };

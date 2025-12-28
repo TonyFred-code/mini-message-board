@@ -1,4 +1,8 @@
-import { getAllMessages, insertMessage } from "../db/queries.js";
+import {
+  getAllMessages,
+  getMessageById,
+  insertMessage,
+} from "../db/queries.js";
 
 async function createMessageGet(req, res) {
   res.render("form");
@@ -32,4 +36,23 @@ async function getMessages(req, res) {
   res.render("index", { title: "Mini Message Board", messages });
 }
 
-export { createMessageGet, createMessagePost, getMessages };
+async function getMessage(req, res) {
+  const messageId = req.params.messageId;
+
+  const messageDetails = await getMessageById(messageId);
+
+  if (!messageDetails) {
+    res.status(404).send("Message Not Found");
+    return;
+  }
+
+  console.log(messageDetails);
+
+  res.render("message", {
+    user: messageDetails.user_name,
+    text: messageDetails.text,
+    added: messageDetails.added,
+  });
+}
+
+export { createMessageGet, createMessagePost, getMessages, getMessage };
