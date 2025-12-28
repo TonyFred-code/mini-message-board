@@ -1,67 +1,33 @@
 import { Router } from "express";
-import { messageRouter } from "./messageRouter.js";
-const messages = [
-  {
-    text: "Hi there!",
-    user: "Amando",
-    added: new Date(),
-    id: 1,
-  },
-  {
-    text: "Hello World!",
-    user: "Charles",
-    added: new Date(),
-    id: 2,
-  },
-];
+import {
+  createMessageGet,
+  createMessagePost,
+  getMessages,
+} from "../controllers/indexController.js";
 
 const indexRouter = Router();
 
-indexRouter.use("/new", messageRouter);
+indexRouter.get("/new", createMessageGet);
 indexRouter.get("/message/:messageId", (req, res) => {
-  const messageId = req.params.messageId;
+  // const messageId = req.params.messageId;
 
-  const message = messages.find((m) => m.id === Number(messageId));
+  // const message = messages.find((m) => m.id === Number(messageId));
 
-  if (!message) {
-    res.status(404).send("Message Not Found");
-    return;
-  }
+  // if (!message) {
+  //   res.status(404).send("Message Not Found");
+  //   return;
+  // }
 
-  res.render("message", {
-    user: message.user,
-    text: message.text,
-    added: message.added,
-  });
+  // res.render("message", {
+  //   user: message.user,
+  //   text: message.text,
+  //   added: message.added,
+  // });
+  res.send("working");
 });
 
-indexRouter.post("/new", (req, res) => {
-  const { text, user } = req.body;
-  if (
-    typeof text !== "string" ||
-    text.trim() === "" ||
-    typeof user !== "string" ||
-    user.trim() === ""
-  ) {
-    res
-      .status(400)
-      .send(
-        "Both 'text' and 'user' fields are required and must be non-empty."
-      );
-    return;
-  }
+indexRouter.post("/new", createMessagePost);
 
-  messages.push({
-    text: text,
-    user: user,
-    added: new Date(),
-    id: messages.length,
-  });
-  res.redirect("/");
-});
-
-indexRouter.get("/", (req, res) => {
-  res.render("index", { title: "Mini Message Board", messages });
-});
+indexRouter.get("/", getMessages);
 
 export { indexRouter };
