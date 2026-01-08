@@ -9,17 +9,21 @@ async function createMessageGet(req, res) {
   res.render("form");
 }
 
-const validateUser = [
+const validateMessageInputs = [
   body("user")
     .trim()
-    .isAlphanumeric()
-    .withMessage("Username can only contain alpha numeric characters")
+    .notEmpty()
+    .withMessage("Username field cannot be empty")
+    .isAlphanumeric("en-US", { ignore: "_-" })
+    .withMessage(
+      "Username can only contain letters, numbers, underscores and hyphens"
+    )
     .isLength({ min: 4, max: 20 })
     .withMessage("Username must be between 4 and 20 characters"),
   body("text")
     .trim()
     .isLength({ max: 255 })
-    .withMessage("Text maximum characters limit is 255"),
+    .withMessage("Text must not exceed 255 characters"),
 ];
 
 async function createMessagePostHandler(req, res) {
@@ -37,7 +41,7 @@ async function createMessagePostHandler(req, res) {
   res.redirect("/");
 }
 
-const createMessagePost = [...validateUser, createMessagePostHandler];
+const createMessagePost = [...validateMessageInputs, createMessagePostHandler];
 
 async function getMessages(req, res) {
   const messages = await getAllMessages();
