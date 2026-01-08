@@ -1,3 +1,4 @@
+import { body, matchedData, validationResult } from "express-validator";
 import {
   getAllMessages,
   getMessageById,
@@ -8,25 +9,39 @@ async function createMessageGet(req, res) {
   res.render("form");
 }
 
-async function createMessagePost(req, res) {
-  const { text, user } = req.body;
-  if (
-    typeof text !== "string" ||
-    text.trim() === "" ||
-    typeof user !== "string" ||
-    user.trim() === ""
-  ) {
-    res
-      .status(400)
-      .send(
-        "Both 'text' and 'user' fields are required and must be non-empty."
-      );
-    return;
+const validateMessageInputs = [
+  body("user")
+    .trim()
+    .notEmpty()
+    .withMessage("Username field cannot be empty")
+    .isAlphanumeric("en-US", { ignore: "_-" })
+    .withMessage(
+      "Username can only contain letters, numbers, underscores and hyphens"
+    )
+    .isLength({ min: 4, max: 20 })
+    .withMessage("Username must be between 4 and 20 characters"),
+  body("text")
+    .trim()
+    .isLength({ max: 255 })
+    .withMessage("Text must not exceed 255 characters"),
+];
+
+async function createMessagePostHandler(req, res) {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(400).render("errors", {
+      errors: errors.array(),
+    });
   }
+
+  const { user, text } = matchedData(req);
 
   await insertMessage(user, text);
   res.redirect("/");
 }
+
+const createMessagePost = [...validateMessageInputs, createMessagePostHandler];
 
 async function getMessages(req, res) {
   const messages = await getAllMessages();
